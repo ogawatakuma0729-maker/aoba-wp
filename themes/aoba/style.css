@@ -1,0 +1,107 @@
+/*
+Theme Name: 青葉ワークス
+Theme URI: https://github.com/ogawatakuma0729-maker/aoba-wp
+Author: ogawatakuma0729-maker
+Description: 小さな会社の案内サイト向け WordPress 見本テーマです。実在の会社ではありません。
+Version: 1.0
+Text Domain: aoba
+*/
+
+:root {
+  --bg: #0f1720;
+  --card: #17202b;
+  --line: #2a3848;
+  --text: #e8eef4;
+  --muted: #93a4b5;
+  --accent: #3d9cf0;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Yu Gothic", "Meiryo", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+}
+a { color: inherit; text-decoration: none; }
+.wrap { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
+.site-header { border-bottom: 1px solid var(--line); }
+.site-header .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 64px;
+  gap: 16px;
+}
+.logo { letter-spacing: 0.16em; font-weight: 700; }
+.nav-list {
+  display: flex;
+  gap: 22px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.hero { padding: 88px 0 64px; }
+.eyebrow {
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  font-size: 12px;
+  margin: 0 0 12px;
+}
+h1 { font-size: clamp(28px, 4.5vw, 46px); margin: 0 0 16px; }
+.lead { color: var(--muted); max-width: 34em; }
+.btn {
+  display: inline-block;
+  margin-top: 24px;
+  background: var(--accent);
+  color: #061018;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+.content { padding: 56px 0 80px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+}
+.card h2, .card h3 { margin: 0 0 8px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.contact-form { display: grid; gap: 12px; max-width: 480px; }
+.contact-form input,
+.contact-form textarea {
+  background: #0c131b;
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font: 16px "Yu Gothic", "Meiryo", sans-serif;
+}
+.thanks {
+  display: none;
+  color: #9fe0b5;
+}
+.thanks.show { display: block; }
+.site-footer {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 28px 0 40px;
+  border-top: 1px solid var(--line);
+}
+.admin-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 24px;
+}
+@media (max-width: 800px) {
+  .nav-list, .grid { display: block; }
+  .grid .card { margin-bottom: 12px; }
+}
