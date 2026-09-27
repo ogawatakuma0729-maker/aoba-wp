@@ -9,9 +9,65 @@ function aoba_setup() {
 add_action('after_setup_theme', 'aoba_setup');
 
 function aoba_assets() {
-  wp_enqueue_style('aoba-style', get_stylesheet_uri(), array(), '1.1');
+  wp_enqueue_style('aoba-style', get_stylesheet_uri(), array(), '1.2');
 }
 add_action('wp_enqueue_scripts', 'aoba_assets');
+
+function aoba_customize($wp_customize) {
+  $wp_customize->add_section('aoba_measure', array(
+    'title' => '店情報・測定',
+    'description' => '地図登録と人数計測に使う情報です。本番の測定IDだけ、相手の番号に差し替えます。',
+  ));
+  $fields = array(
+    'aoba_address' => array('label' => '住所', 'default' => '架空県架空市1-2-3（実在しません）'),
+    'aoba_phone' => array('label' => '電話', 'default' => '000-0000-0000'),
+    'aoba_hours' => array('label' => '営業時間', 'default' => '平日 10:00-18:00'),
+    'aoba_ga4' => array('label' => '測定ID（G- から始まる番号）', 'default' => ''),
+  );
+  foreach ($fields as $id => $field) {
+    $wp_customize->add_setting($id, array(
+      'default' => $field['default'],
+      'sanitize_callback' => 'sanitize_text_field',
+    ));
+    $wp_customize->add_control($id, array(
+      'label' => $field['label'],
+      'section' => 'aoba_measure',
+      'type' => 'text',
+    ));
+  }
+}
+add_action('customize_register', 'aoba_customize');
+
+function aoba_schema() {
+  $data = array(
+    '@context' => 'https://schema.org',
+    '@type' => 'ProfessionalService',
+    'name' => get_bloginfo('name'),
+    'url' => home_url('/'),
+    'description' => aoba_description(),
+    'address' => array(
+      '@type' => 'PostalAddress',
+      'streetAddress' => get_theme_mod('aoba_address', '架空県架空市1-2-3（実在しません）'),
+      'addressCountry' => 'JP',
+    ),
+    'telephone' => get_theme_mod('aoba_phone', '000-0000-0000'),
+    'openingHours' => get_theme_mod('aoba_hours', '平日 10:00-18:00'),
+  );
+  echo '<script type="application/ld+json">' . wp_json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>' . "\n";
+}
+add_action('wp_head', 'aoba_schema', 5);
+
+function aoba_ga4() {
+  $id = get_theme_mod('aoba_ga4', '');
+  if (!$id || strpos($id, 'G-') !== 0) {
+    return;
+  }
+  $id = esc_js($id);
+  echo "<!-- 訪問者の人数を数えるタグ。本番の番号だけ入れます。 -->\n";
+  echo '<script async src="https://www.googletagmanager.com/gtag/js?id=' . $id . '"></script>' . "\n";
+  echo "<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{$id}');</script>\n";
+}
+add_action('wp_head', 'aoba_ga4', 20);
 
 function aoba_description() {
   if (is_singular()) {
