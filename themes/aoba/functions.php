@@ -9,9 +9,63 @@ function aoba_setup() {
 add_action('after_setup_theme', 'aoba_setup');
 
 function aoba_assets() {
-  wp_enqueue_style('aoba-style', get_stylesheet_uri(), array(), '1.2');
+  wp_enqueue_style('aoba-style', get_stylesheet_uri(), array(), '1.3');
 }
 add_action('wp_enqueue_scripts', 'aoba_assets');
+
+function aoba_register_types() {
+  $shared = array(
+    'public' => true,
+    'has_archive' => true,
+    'show_in_rest' => true,
+    'supports' => array('title', 'editor', 'excerpt'),
+    'menu_position' => 5,
+  );
+  register_post_type('aoba_service', $shared + array(
+    'label' => '事業',
+    'rewrite' => array('slug' => 'service'),
+  ));
+  register_post_type('aoba_work', $shared + array(
+    'label' => '実績',
+    'rewrite' => array('slug' => 'works'),
+  ));
+  register_post_type('aoba_job', $shared + array(
+    'label' => '採用',
+    'rewrite' => array('slug' => 'jobs'),
+  ));
+  register_post_type('aoba_inquiry', array(
+    'label' => '問い合わせ',
+    'public' => false,
+    'show_ui' => true,
+    'supports' => array('title', 'editor'),
+  ));
+}
+add_action('init', 'aoba_register_types');
+
+function aoba_flush_rewrites() {
+  aoba_register_types();
+  flush_rewrite_rules();
+}
+add_action('after_switch_theme', 'aoba_flush_rewrites');
+
+function aoba_handle_contact() {
+  if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'aoba_contact')) {
+    wp_die('不正な送信です。');
+  }
+  $name = sanitize_text_field(wp_unslash($_POST['name'] ?? ''));
+  $company = sanitize_text_field(wp_unslash($_POST['company'] ?? ''));
+  $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
+  wp_insert_post(array(
+    'post_type' => 'aoba_inquiry',
+    'post_status' => 'private',
+    'post_title' => $name !== '' ? $name : '無題',
+    'post_content' => "会社: {$company}\n\n{$message}",
+  ));
+  wp_safe_redirect(add_query_arg('sent', '1', wp_get_referer() ? wp_get_referer() : home_url('/contact/')));
+  exit;
+}
+add_action('admin_post_nopriv_aoba_contact', 'aoba_handle_contact');
+add_action('admin_post_aoba_contact', 'aoba_handle_contact');
 
 function aoba_customize($wp_customize) {
   $wp_customize->add_section('aoba_measure', array(

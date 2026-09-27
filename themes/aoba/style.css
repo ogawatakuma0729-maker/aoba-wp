@@ -101,6 +101,11 @@ h1 { font-size: clamp(28px, 4.5vw, 46px); margin: 0 0 16px; }
   color: var(--muted);
   margin-top: 24px;
 }
+.list { display: grid; gap: 14px; margin-top: 24px; }
+.list .card { display: block; }
+.entry { color: var(--muted); max-width: 40em; }
+.thanks.show { display: block; }
+.nav-list { flex-wrap: wrap; }
 @media (max-width: 800px) {
   .nav-list, .grid { display: block; }
   .grid .card { margin-bottom: 12px; }
